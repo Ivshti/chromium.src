@@ -2283,6 +2283,13 @@ void HWNDMessageHandler::OnWindowPosChanged(WINDOWPOS* window_pos) {
     delegate_->HandleVisibilityChanged(true);
   else if (window_pos->flags & SWP_HIDEWINDOW)
     delegate_->HandleVisibilityChanged(false);
+
+  if(GetWindowLong(hwnd(), GWL_STYLE) & WS_POPUP && 
+    GetWindowLong(hwnd(), GWL_EXSTYLE) & WS_EX_COMPOSITED) 
+  {
+    MARGINS m = {-1, -1, -1, -1};
+    DwmExtendFrameIntoClientArea(hwnd(), &m);
+  }
   SetMsgHandled(FALSE);
 }
 

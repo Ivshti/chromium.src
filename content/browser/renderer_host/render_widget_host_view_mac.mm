@@ -2979,7 +2979,7 @@ SkBitmap::Config RenderWidgetHostViewMac::PreferredReadbackFormat() {
   if (!renderWidgetHostView_->use_core_animation_)
     [oldWindow disableScreenUpdatesUntilFlush];
 
-  NSNotificationCenter* notificationCenter =
+    NSNotificationCenter* notificationCenter =
       [NSNotificationCenter defaultCenter];
 
   // Backing property notifications crash on 10.6 when building with the 10.7
@@ -2987,7 +2987,7 @@ SkBitmap::Config RenderWidgetHostViewMac::PreferredReadbackFormat() {
   static BOOL supportsBackingPropertiesNotification =
       SupportsBackingPropertiesChangedNotification();
 
-  if (oldWindow) {
+if (oldWindow) {
     if (supportsBackingPropertiesNotification) {
       [notificationCenter
           removeObserver:self
