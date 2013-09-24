@@ -141,6 +141,11 @@ CompositingIOSurfaceContext::Get(int window_number) {
     }
     glUseProgram(0u);
   }
+
+  GLint clear = 0;
+  //[nsgl_context setValues:&clear forParameter:NSOpenGLCPSurfaceOpacity];
+  CGLSetParameter(cgl_context, kCGLCPSurfaceOpacity, &clear);
+
   if (!prepared) {
     LOG(ERROR) << "IOSurface failed to compile/link required shader programs.";
     return NULL;

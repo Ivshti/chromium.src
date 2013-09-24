@@ -158,6 +158,7 @@ void BackingStoreMac::PaintToBackingStore(
       // The layer hasn't been created yet, so draw into the cache bitmap.
       gfx::Rect paint_rect = copy_rect;
       paint_rect.set_y(size().height() - copy_rect.bottom());
+      CGContextClearRect(cg_bitmap_, paint_rect.ToCGRect());
       CGContextDrawImage(cg_bitmap_, paint_rect.ToCGRect(), image);
     }
   }
