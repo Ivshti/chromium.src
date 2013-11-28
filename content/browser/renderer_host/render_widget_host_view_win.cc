@@ -1269,6 +1269,27 @@ LRESULT RenderWidgetHostViewWin::OnPaint(UINT message, WPARAM wparam, LPARAM lpa
   TRACE_EVENT0("browser", "RenderWidgetHostViewWin::OnPaint");
 
   if (is_layered_window_) {
+    if (!did_first_paint_) {
+      did_first_paint_ = true;
+      HDC dc = ::GetDC(layered_parent_);
+
+      RECT win_rect;
+      ::GetWindowRect(layered_parent_, &win_rect);
+
+      SetLayeredWindowAttributes(layered_parent_, RGB(255, 0, 0), 0, LWA_COLORKEY);
+
+      HBRUSH brush = CreateSolidBrush(RGB(255,0,0));
+      FillRect(dc, &win_rect, brush);
+
+      DeleteObject(brush);
+      ReleaseDC(dc);
+    } //else if (!did_layered_reset_) {
+      did_layered_reset_ = true;
+
+      LONG flags = ::GetWindowLong(layered_parent_, GWL_EXSTYLE);
+      ::SetWindowLong(layered_parent_, GWL_EXSTYLE, flags & ~WS_EX_LAYERED);
+      ::SetWindowLong(layered_parent_, GWL_EXSTYLE, flags);
+    //}
     handled = FALSE;
     return 0L;
   }
@@ -1434,7 +1455,7 @@ void RenderWidgetHostViewWin::SetLayeredWindow(HWND layered) {
 LRESULT RenderWidgetHostViewWin::OnTimer(UINT message, WPARAM wparam, LPARAM lparam, BOOL& handled) {
   handled = TRUE;
 
-  if(update_layered_window_) {
+  if(update_layered_window_ && did_layered_reset_) {
     DWORD lerror = 0;
     HDC dc = ::GetDC(layered_parent_);
     BLENDFUNCTION ftn = { AC_SRC_OVER, 0x00, 0xFF, AC_SRC_ALPHA };
@@ -1453,7 +1474,7 @@ LRESULT RenderWidgetHostViewWin::OnTimer(UINT message, WPARAM wparam, LPARAM lpa
       lerror = GetLastError();
       LOG(ERROR) << "Unable to udpate layered window. GLE=" << std::hex << lerror;
     }
-    DeleteObject(dc);
+    ReleaseDC(dc);
     update_layered_window_ = false;
   }
   return 0;

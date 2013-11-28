@@ -601,12 +601,13 @@ class RenderWidgetHostViewWin
   // Are touch events currently enabled?
   bool touch_events_enabled_;
 
-
   // Transparency with proper click-through hit-testing requires layered painting
-   HWND layered_parent_;
-   bool is_layered_window_;
-   bool update_layered_window_;
- 
+  HWND layered_parent_;
+  bool is_layered_window_;
+  bool update_layered_window_;
+  bool did_first_paint_;
+  bool did_layered_reset_;
+
   scoped_ptr<ui::GestureRecognizer> gesture_recognizer_;
 
   // The OS-provided default IAccessible instance for our hwnd.

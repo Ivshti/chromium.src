@@ -153,7 +153,10 @@ bool InitializeGLBindings(GLImplementation implementation) {
       break;
     }
     case kGLImplementationEGLGLES2: {
+      const CommandLine* command_line = CommandLine::ForCurrentProcess();
       base::FilePath module_path;
+      base::FilePath resources_path = (command_line->HasSwitch("resources")) ? command_line->GetSwitchValuePath("resources") : base::FilePath();
+
       if (!PathService::Get(base::DIR_MODULE, &module_path))
         return false;
 
@@ -161,13 +164,29 @@ bool InitializeGLBindings(GLImplementation implementation) {
       // and if that fails, using an absolute path. This is to ensure these DLLs
       // are loaded before ANGLE is loaded in case they are not in the default
       // search path. Prefer the post vista version.
+<<<<<<< HEAD
       if (base::win::GetVersion() < base::win::VERSION_VISTA ||
           !LoadD3DXLibrary(module_path, kPostVistaD3DCompiler)) {
         LoadD3DXLibrary(module_path, kPreVistaD3DCompiler);
+=======
+      if (base::win::GetVersion() < base::win::VERSION_VISTA) {
+        if(!LoadD3DXLibrary(module_path, kPreVistaD3DCompiler) &&
+            !LoadD3DXLibrary(resources_path, kPreVistaD3DCompiler)) {
+          DVLOG(1) << "Cannot load D3D Library.";
+          return false;
+        }
+      } else {
+        if(!LoadD3DXLibrary(module_path, kPostVistaD3DCompiler) &&
+            !LoadD3DXLibrary(resources_path, kPostVistaD3DCompiler) &&
+            !LoadD3DXLibrary(module_path, kPreVistaD3DCompiler) &&
+            !LoadD3DXLibrary(resources_path, kPreVistaD3DCompiler)) {
+          DVLOG(1) << "Cannot load D3D Library.";
+          return false;
+        }
+>>>>>>> b82e6da... Fix quite a few transparency display and performance problems
       }
 
       base::FilePath gles_path;
-      const CommandLine* command_line = CommandLine::ForCurrentProcess();
       bool using_swift_shader =
           command_line->GetSwitchValueASCII(switches::kUseGL) == "swiftshader";
       if (using_swift_shader) {
@@ -185,20 +204,34 @@ bool InitializeGLBindings(GLImplementation implementation) {
       // the former and if there is another version of libglesv2.dll in the dll
       // search path, it will get loaded instead.
       base::NativeLibrary gles_library = base::LoadNativeLibrary(
+<<<<<<< HEAD
           gles_path.Append(L"libglesv2.dll"), NULL);
+=======
+          resources_path.Append(L"libglesv2.dll"), NULL);
+>>>>>>> b82e6da... Fix quite a few transparency display and performance problems
       if (!gles_library) {
-        DVLOG(1) << "libglesv2.dll not found";
-        return false;
+        gles_library = base::LoadNativeLibrary(gles_path.Append(L"libglesv2.dll"), NULL);
+        if(!gles_library) {
+          DVLOG(1) << "libglesv2.dll not found";
+          return false;
+        }
       }
 
       // When using EGL, first try eglGetProcAddress and then Windows
       // GetProcAddress on both the EGL and GLES2 DLLs.
       base::NativeLibrary egl_library = base::LoadNativeLibrary(
+<<<<<<< HEAD
           gles_path.Append(L"libegl.dll"), NULL);
+=======
+        resources_path.Append(L"libegl.dll"), NULL);//gles_path.Append(L"libegl.dll"), NULL);
+>>>>>>> b82e6da... Fix quite a few transparency display and performance problems
       if (!egl_library) {
-        DVLOG(1) << "libegl.dll not found.";
-        base::UnloadNativeLibrary(gles_library);
-        return false;
+        egl_library = base::LoadNativeLibrary(gles_path.Append(L"libegl.dll"), NULL);
+        if(!egl_library) {
+          DVLOG(1) << "libegl.dll not found.";
+          base::UnloadNativeLibrary(gles_library);
+          return false;
+        }
       }
 
 #if defined(ENABLE_SWIFTSHADER)
