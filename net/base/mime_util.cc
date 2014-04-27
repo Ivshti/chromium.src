@@ -128,6 +128,8 @@ static const MimeInfo primary_mappings[] = {
   { "image/webp", "webp" },
   { "image/png", "png" },
   { "video/mp4", "mp4,m4v" },
+  { "video/x-msvideo", "avi" },
+  { "video/x-matroska", "mkv,mk3d,mka,mks" },
   { "audio/x-m4a", "m4a" },
   { "audio/mp3", "mp3" },
   { "video/ogg", "ogv,ogm" },
@@ -291,6 +293,10 @@ static const char* const proprietary_media_types[] = {
   "audio/mp3",
   "audio/x-mp3",
   "audio/mpeg",
+  
+  // other
+  "video/x-msvideo",
+  "video/x-matroska"
 };
 
 // List of supported codecs when passed in with <source type="...">.
@@ -831,7 +837,9 @@ static const char* const kStandardVideoTypes[] = {
   "video/x-m4v",
   "video/x-mpeg",
   "video/x-ms-asf",
-  "video/x-ms-wmv"
+  "video/x-ms-wmv",
+  "video/x-msvideo",
+  "video-x-matroska"
 };
 
 struct StandardType {
