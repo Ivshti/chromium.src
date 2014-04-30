@@ -2312,7 +2312,7 @@ void HWNDMessageHandler::OnWindowPosChanged(WINDOWPOS* window_pos) {
   if (remove_standard_frame_ && window_pos->flags & SWP_FRAMECHANGED &&
       ui::win::IsAeroGlassEnabled() &&
       (window_ex_style() & WS_EX_COMPOSITED) == 0) {
-    MARGINS m = {10, 10, 10, 10};
+    MARGINS m = {-1, -1, -1, -1};
     DwmExtendFrameIntoClientArea(hwnd(), &m);
   }
   if (window_pos->flags & SWP_SHOWWINDOW)
