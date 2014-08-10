@@ -27,10 +27,11 @@
     DCHECK(context_);
     needsDisplay_ = NO;
 
-    [self setBackgroundColor:CGColorGetConstantColor(kCGColorWhite)];
+    [self setBackgroundColor:CGColorGetConstantColor(kCGColorClear)];
     [self setAnchorPoint:CGPointMake(0, 0)];
     // Setting contents gravity is necessary to prevent the layer from being
     // scaled during dyanmic resizes (especially with devtools open).
+
     [self setContentsGravity:kCAGravityTopLeft];
     if (renderWidgetHostView_->compositing_iosurface_ &&
         [self respondsToSelector:(@selector(setContentsScale:))]) {
@@ -118,7 +119,8 @@
       !renderWidgetHostView_ ||
       !renderWidgetHostView_->compositing_iosurface_ ||
       !renderWidgetHostView_->compositing_iosurface_->HasIOSurface()) {
-    glClearColor(1, 1, 1, 1);
+    glClearColor(0, 0, 0, 0);
+
     glClear(GL_COLOR_BUFFER_BIT);
     return;
   }

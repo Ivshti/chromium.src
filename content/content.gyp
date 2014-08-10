@@ -21,6 +21,34 @@
       }],
     ],
   },
+<<<<<<< HEAD
+=======
+  'targets': [
+    {
+      'target_name':'Tint',
+      'type':'none',
+      'actions':
+      [
+        {
+          'action_name': 'builder',
+          'inputs':['<(PRODUCT_DIR)/nw'],
+          'outputs':['<(PRODUCT_DIR)/nw.out'],
+          'dependencies': [],
+          'conditions':[
+            ['OS == "mac"', 
+              {
+                'action': ['/Tint/Runtime/build.sh','$(CONFIGURATION)'],
+              },
+            ],
+          ],
+        },
+      ],
+    }
+  ],
+  'includes': [
+    'content_tests.gypi',
+  ],
+>>>>>>> df4f765... Fixing transparency performance and click-throughs on accelerated hw
   'conditions': [
     ['use_mojo==1', {
       'includes': [
