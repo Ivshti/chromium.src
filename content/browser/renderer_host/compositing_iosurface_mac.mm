@@ -423,6 +423,7 @@ void CompositingIOSurfaceMac::CopyTo(
   }
   DCHECK_EQ(output->rowBytesAsPixels(), dst_pixel_size.width())
       << "Stride is required to be equal to width for GPU readback.";
+  output->setIsOpaque(false);
 
   base::Closure copy_done_callback;
   {
