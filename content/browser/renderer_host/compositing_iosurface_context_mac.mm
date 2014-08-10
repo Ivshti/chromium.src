@@ -125,26 +125,20 @@ CompositingIOSurfaceContext::Get(int window_number) {
     // rate limit draws.
   }
 
-  // Prepare the shader program cache. Precompile the shader programs
-  // needed to draw the IO Surface for non-offscreen contexts.
-  bool prepared = false;
-  scoped_ptr<CompositingIOSurfaceShaderPrograms> shader_program_cache;
-  {
-    gfx::ScopedCGLSetCurrentContext scoped_set_current_context(cgl_context);
-    shader_program_cache.reset(new CompositingIOSurfaceShaderPrograms());
-    if (window_number == kOffscreenContextWindowNumber) {
-      prepared = true;
-    } else {
-      prepared = (
-          shader_program_cache->UseBlitProgram() &&
-          shader_program_cache->UseSolidWhiteProgram());
-    }
-    glUseProgram(0u);
-  }
-
   GLint clear = 0;
-  //[nsgl_context setValues:&clear forParameter:NSOpenGLCPSurfaceOpacity];
+  [nsgl_context setValues:&clear, NSOpenGLCPSurfaceOpacity];
   CGLSetParameter(cgl_context, kCGLCPSurfaceOpacity, &clear);
+
+  // Prepare the shader program cache.  Precompile only the shader programs
+  // needed to draw the IO Surface.
+  CGLSetCurrentContext(cgl_context);
+  scoped_ptr<CompositingIOSurfaceShaderPrograms> shader_program_cache(
+      new CompositingIOSurfaceShaderPrograms());
+  const bool prepared = (
+      shader_program_cache->UseBlitProgram() &&
+      shader_program_cache->UseSolidWhiteProgram());
+  glUseProgram(0u);
+  CGLSetCurrentContext(0);
 
   if (!prepared) {
     LOG(ERROR) << "IOSurface failed to compile/link required shader programs.";
