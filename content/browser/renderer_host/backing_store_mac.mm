@@ -152,11 +152,13 @@ void BackingStoreMac::PaintToBackingStore(
       CGContextRef layer = CGLayerGetContext(cg_layer());
       gfx::Rect paint_rect = copy_rect;
       paint_rect.set_y(size().height() - copy_rect.bottom());
+      CGContextClearRect(layer, paint_rect.ToCGRect()); // Added by trevorlinton@node-webkit, required for transparency
       CGContextDrawImage(layer, paint_rect.ToCGRect(), image);
     } else {
       // The layer hasn't been created yet, so draw into the cache bitmap.
       gfx::Rect paint_rect = copy_rect;
       paint_rect.set_y(size().height() - copy_rect.bottom());
+      CGContextClearRect(layer, paint_rect.ToCGRect()); // Added by trevorlinton@node-webkit, required for transparency
       CGContextDrawImage(cg_bitmap_, paint_rect.ToCGRect(), image);
     }
   }
