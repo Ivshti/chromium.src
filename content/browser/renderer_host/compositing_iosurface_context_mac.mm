@@ -64,7 +64,7 @@ CompositingIOSurfaceContext::Get(int window_number) {
   }
 
    GLint clear = 0;
-   [nsgl_context setValues:&clear, NSOpenGLCPSurfaceOpacity];
+   //[nsgl_context setValues:&clear, NSOpenGLCPSurfaceOpacity];
    CGLSetParameter(cgl_context, kCGLCPSurfaceOpacity, &clear);
 
   // Draw at beam vsync.
