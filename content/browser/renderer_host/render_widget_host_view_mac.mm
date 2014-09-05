@@ -500,7 +500,7 @@ void RenderWidgetHostViewMac::EnableCoreAnimation() {
   software_layer_.reset([[CALayer alloc] init]);
   if (!software_layer_)
     LOG(ERROR) << "Failed to create CALayer for software rendering";
-  [software_layer_ setBackgroundColor:CGColorGetConstantColor(kCGColorWhite)];
+  [software_layer_ setBackgroundColor:CGColorGetConstantColor(kCGColorClear)];
   [software_layer_ setDelegate:cocoa_view_];
   [software_layer_ setContentsGravity:kCAGravityTopLeft];
   [software_layer_ setFrame:NSRectToCGRect([cocoa_view_ bounds])];
@@ -2687,7 +2687,7 @@ void RenderWidgetHostViewMac::FrameSwapped() {
 
     NSRect r = [self flipRectToNSRect:gfx::Rect(x, y, width, height)];
     CGContextSetFillColorWithColor(context,
-                                   CGColorGetConstantColor(kCGColorWhite));
+                                   CGColorGetConstantColor(kCGColorClear));
     CGContextFillRect(context, NSRectToCGRect(r));
   }
   if (damagedRect.bottom() > rect.bottom()) {
@@ -2709,7 +2709,7 @@ void RenderWidgetHostViewMac::FrameSwapped() {
 
     NSRect r = [self flipRectToNSRect:gfx::Rect(x, y, width, height)];
     CGContextSetFillColorWithColor(context,
-                                   CGColorGetConstantColor(kCGColorWhite));
+                                   CGColorGetConstantColor(kCGColorClear));
     CGContextFillRect(context, NSRectToCGRect(r));
   }
 }
@@ -2720,7 +2720,7 @@ void RenderWidgetHostViewMac::FrameSwapped() {
 
   if (!renderWidgetHostView_->render_widget_host_) {
     // TODO(shess): Consider using something more noticable?
-    [[NSColor whiteColor] set];
+    [[NSColor clearColor] set];
     NSRectFill(dirtyRect);
     return;
   }
@@ -2868,7 +2868,7 @@ void RenderWidgetHostViewMac::FrameSwapped() {
     }
   } else {
     CGContextSetFillColorWithColor(context,
-                                   CGColorGetConstantColor(kCGColorWhite));
+                                   CGColorGetConstantColor(kCGColorClear));
     CGContextFillRect(context, dirtyRect);
     if (renderWidgetHostView_->whiteout_start_time_.is_null())
       renderWidgetHostView_->whiteout_start_time_ = base::TimeTicks::Now();
@@ -3875,7 +3875,7 @@ extern NSString *NSTextInputReplacementRangeAttributeName;
   if (!renderWidgetHostView_->render_widget_host_ ||
       renderWidgetHostView_->render_widget_host_->is_hidden()) {
     CGContextSetFillColorWithColor(context,
-                                   CGColorGetConstantColor(kCGColorWhite));
+                                   CGColorGetConstantColor(kCGColorClear));
     CGContextFillRect(context, clipRect);
     return;
   }
