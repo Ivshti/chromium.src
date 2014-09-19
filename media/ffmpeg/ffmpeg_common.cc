@@ -85,10 +85,16 @@ static AudioCodec CodecIDToAudioCodec(AVCodecID codec_id) {
       return kCodecAMR_WB;
     case AV_CODEC_ID_GSM_MS:
       return kCodecGSM_MS;
+    case AV_CODEC_ID_PCM_ALAW:
+      return kCodecPCM_ALAW;
     case AV_CODEC_ID_PCM_MULAW:
       return kCodecPCM_MULAW;
     case AV_CODEC_ID_OPUS:
       return kCodecOpus;
+    case AV_CODEC_ID_AC3:
+      return kCodecAC3;
+    case AV_CODEC_ID_EAC3:
+      return kCodecEAC3;
     default:
       DVLOG(1) << "Unknown audio CodecID: " << codec_id;
   }
@@ -130,10 +136,16 @@ static AVCodecID AudioCodecToCodecID(AudioCodec audio_codec,
       return AV_CODEC_ID_AMR_WB;
     case kCodecGSM_MS:
       return AV_CODEC_ID_GSM_MS;
+    case kCodecPCM_ALAW:
+      return AV_CODEC_ID_PCM_ALAW;
     case kCodecPCM_MULAW:
       return AV_CODEC_ID_PCM_MULAW;
     case kCodecOpus:
       return AV_CODEC_ID_OPUS;
+    case kCodecAC3:
+      return AV_CODEC_ID_AC3;
+    case kCodecEAC3:
+      return AV_CODEC_ID_EAC3;
     default:
       DVLOG(1) << "Unknown AudioCodec: " << audio_codec;
   }
@@ -282,8 +294,9 @@ static void AVCodecContextToAudioDecoderConfig(
 
   if (codec == kCodecOpus) {
     // |codec_context->sample_fmt| is not set by FFmpeg because Opus decoding is
-    // not enabled in FFmpeg, so we need to manually set the sample format.
-    sample_format = kSampleFormatS16;
+    // not enabled in FFmpeg.  It doesn't matter what value is set here, so long
+    // as it's valid, the true sample format is selected inside the decoder.
+    sample_format = kSampleFormatF32;
   }
 
   base::TimeDelta seek_preroll;
@@ -384,9 +397,12 @@ void AVStreamToVideoDecoderConfig(
       visible_rect.size(), aspect_ratio.num, aspect_ratio.den);
 
   if (record_stats) {
+    // Note the PRESUBMIT_IGNORE_UMA_MAX below, this silences the PRESUBMIT.py
+    // check for uma enum max usage, since we're abusing
+    // UMA_HISTOGRAM_ENUMERATION to report a discrete value.
     UMA_HISTOGRAM_ENUMERATION("Media.VideoColorRange",
                               stream->codec->color_range,
-                              AVCOL_RANGE_NB);
+                              AVCOL_RANGE_NB);  // PRESUBMIT_IGNORE_UMA_MAX
   }
 
   VideoFrame::Format format = PixelFormatToVideoFormat(stream->codec->pix_fmt);
@@ -395,6 +411,11 @@ void AVStreamToVideoDecoderConfig(
     format = VideoFrame::YV12;
     coded_size = natural_size;
   }
+
+  // Pad out |coded_size| for subsampled YUV formats.
+  coded_size.set_width((coded_size.width() + 1) / 2 * 2);
+  if (format != VideoFrame::YV16)
+    coded_size.set_height((coded_size.height() + 1) / 2 * 2);
 
   bool is_encrypted = false;
   AVDictionaryEntry* key = av_dict_get(stream->metadata, "enc_key_id", NULL, 0);
@@ -509,9 +530,6 @@ VideoFrame::Format PixelFormatToVideoFormat(PixelFormat pixel_format) {
   switch (pixel_format) {
     case PIX_FMT_YUV422P:
       return VideoFrame::YV16;
-    // TODO(scherkus): We should be paying attention to the color range of each
-    // format and scaling as appropriate when rendering. Regular YUV has a range
-    // of 16-239 where as YUVJ has a range of 0-255.
     case PIX_FMT_YUV420P:
     case PIX_FMT_YUVJ420P:
       return VideoFrame::YV12;
