@@ -41,22 +41,13 @@ void WebContentsObserver::Observe(WebContents* web_contents) {
   }
 }
 
-<<<<<<< HEAD
-=======
-bool WebContentsObserver::OnMessageReceived(
-    const IPC::Message& message,
-    RenderFrameHost* render_frame_host) {
+bool WebContentsObserver::OnMessageReceived(const IPC::Message& message) {
   return false;
 }
-
 bool WebContentsObserver::OnMessageReceived(RenderViewHost* render_view_host, const IPC::Message& message) {
   return false;
 }
 
->>>>>>> 373a94b... passing render_view_host in OnMessageReceived of message filters
-bool WebContentsObserver::OnMessageReceived(const IPC::Message& message) {
-  return false;
-}
 
 bool WebContentsObserver::Send(IPC::Message* message) {
   if (!web_contents_) {

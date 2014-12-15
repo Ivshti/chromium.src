@@ -302,25 +302,10 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener,
   // Invoked when a user cancels a before unload dialog.
   virtual void BeforeUnloadDialogCancelled() {}
 
-<<<<<<< HEAD
-=======
-  // Invoked when an accessibility event is received from the renderer.
-  virtual void AccessibilityEventReceived(
-      const std::vector<AXEventNotificationDetails>& details) {}
-
-  // Invoked when theme color is changed to |theme_color|.
-  virtual void DidChangeThemeColor(SkColor theme_color) {}
-
-  // Invoked if an IPC message is coming from a specific RenderFrameHost.
-  virtual bool OnMessageReceived(const IPC::Message& message,
-                                 RenderFrameHost* render_frame_host);
-
-
-  virtual bool OnMessageReceived(RenderViewHost* render_view_host, const IPC::Message& message);
-
->>>>>>> 373a94b... passing render_view_host in OnMessageReceived of message filters
   // IPC::Listener implementation.
   virtual bool OnMessageReceived(const IPC::Message& message) OVERRIDE;
+
+  virtual bool OnMessageReceived(RenderViewHost* render_view_host, const IPC::Message& message);
 
   // IPC::Sender implementation.
   virtual bool Send(IPC::Message* message) OVERRIDE;
